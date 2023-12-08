@@ -3,12 +3,12 @@ module github.com/MikeZappa87/kni-server-client-example
 go 1.19
 
 require (
-	google.golang.org/grpc v1.59.0
+	github.com/containerd/go-cni v1.1.9
+	google.golang.org/grpc v1.58.3
 	google.golang.org/protobuf v1.31.0
 )
 
 require (
-	github.com/containerd/go-cni v1.1.9 // indirect
 	github.com/containernetworking/cni v1.1.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	golang.org/x/net v0.14.0 // indirect
