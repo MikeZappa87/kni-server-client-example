@@ -4,11 +4,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"kni-server-client/pkg/apis/runtime/beta"
-	cniservice "kni-server-client/pkg/cni-service"
 	"log"
 	"net"
 	"os"
+
+	cniservice "github.com/MikeZappa87/kni-server-client-example/pkg/cni-service"
+
+	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
 
 	"google.golang.org/grpc"
 )

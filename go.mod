@@ -1,4 +1,4 @@
-module kni-server-client
+module github.com/MikeZappa87/kni-server-client-example
 
 go 1.19
 
