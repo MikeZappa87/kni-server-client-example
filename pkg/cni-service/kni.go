@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
 
@@ -13,8 +14,8 @@ type KniService struct {
 }
 
 func NewKniService() (beta.KNIServer, error) {
-	opts := []cni.Opt{cni.WithLoNetwork, cni.WithDefaultConf}
-
+	opts := []cni.Opt{cni.WithLoNetwork, cni.WithConfListFile("/etc/cni/net.d/10-containerd.conflist")} //cni.WithDefaultConf
+	
 	cni, err := cni.New()
 
 	if err != nil {
@@ -35,17 +36,35 @@ func NewKniService() (beta.KNIServer, error) {
 }
 
 func (k *KniService) AttachNetwork(ctx context.Context, req *beta.AttachNetworkRequest) (*beta.AttachNetworkResponse, error) {
-	_, err := k.c.SetupSerially(ctx, req.Id, req.Isolation.Path)
+	res, err := k.c.SetupSerially(ctx, req.Id, req.Isolation.Path)
+
+	fmt.Println("ATTACH RECEIVED")
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &beta.AttachNetworkResponse{}, nil
+	ip := make(map[string]*beta.IPConfig)
+
+	for outk, outv := range res.Interfaces {
+		data := &beta.IPConfig{}
+		ip[outk] = data
+		data.Mac = outv.Mac
+
+		for _, v := range outv.IPConfigs {
+			data.Ip = append(data.Ip, v.IP.String())
+		}
+	}
+
+	return &beta.AttachNetworkResponse{
+		Ipconfigs: ip,
+	}, nil
 }
 
 func (k *KniService) DetachNetwork(ctx context.Context, req *beta.DetachNetworkRequest) (*beta.DetachNetworkResponse, error) {
 	err := k.c.Remove(ctx, req.Id, req.Isolation.Path)
+
+	fmt.Println("DETACH RECEIVED")
 
 	if err != nil {
 		return nil, err

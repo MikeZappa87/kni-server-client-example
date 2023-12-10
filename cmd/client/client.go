@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
 
@@ -82,7 +83,11 @@ func main() {
 
 		fmt.Println("Execute attach")
 
-		_, err = client.AttachNetwork(context.TODO(), req)
+		res, err := client.AttachNetwork(context.TODO(), req)
+
+		for k, v := range res.Ipconfigs {
+			fmt.Printf("name: %s ips: %s\n", k, strings.Join(v.Ip, ","))
+		}
 
 		if err != nil {
 			fmt.Print(err)
