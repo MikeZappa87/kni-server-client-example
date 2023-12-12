@@ -14,7 +14,9 @@ type KniService struct {
 }
 
 func NewKniService() (beta.KNIServer, error) {
-	opts := []cni.Opt{cni.WithLoNetwork, cni.WithConfListFile("/etc/cni/net.d/10-containerd.conflist")} //cni.WithDefaultConf
+	opts := []cni.Opt{cni.WithLoNetwork,
+		 cni.WithConfListFile("/etc/cni/net.d/10-containerd.conflist"),
+		 cni.WithInterfacePrefix("kni")} //cni.WithDefaultConf
 	
 	cni, err := cni.New()
 
@@ -36,7 +38,15 @@ func NewKniService() (beta.KNIServer, error) {
 }
 
 func (k *KniService) AttachNetwork(ctx context.Context, req *beta.AttachNetworkRequest) (*beta.AttachNetworkResponse, error) {
-	res, err := k.c.SetupSerially(ctx, req.Id, req.Isolation.Path)
+	//This is nice. In the container runtime if you want to add one you need to contribute this to the container runtime
+	//This way you are in complete control. Better capability support with KNI -> CNI
+	opts := []cni.NamespaceOpts{
+		cni.WithLabels(req.Labels),
+		cni.WithLabels(req.Annotations),
+		cni.WithLabels(req.Metadata),
+	}
+	
+	res, err := k.c.SetupSerially(ctx, req.Id, req.Isolation.Path, opts...)
 
 	fmt.Println("ATTACH RECEIVED")
 
@@ -102,9 +112,6 @@ func (k *KniService) SetupNodeNetwork(context.Context, *beta.SetupNodeNetworkReq
 }
 
 func (k *KniService) QueryPod(ctx context.Context,req *beta.QueryPodRequest) (*beta.QueryPodResponse, error) {
-	
-	
-	
 	
 	return nil, nil
 }
