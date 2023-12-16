@@ -1,16 +1,14 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"net"
 	"os"
 
-	cniservice "github.com/MikeZappa87/kni-server-client-example/pkg/cni-service"
-
 	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
+	cniservice "github.com/MikeZappa87/kni-server-client-example/pkg/cni-service"
 
 	"google.golang.org/grpc"
 )
@@ -38,7 +36,7 @@ func main() {
 
 	server := grpc.NewServer()
 
-	kni, err := GetBackend(cmd)
+	kni, err := cniservice.NewKniService()
 
 	if err != nil {
 		log.Fatal(err)
@@ -50,11 +48,4 @@ func main() {
 	fmt.Println("Running")
 
 	server.Serve(listener)
-}
-
-func GetBackend(cmd string) (beta.KNIServer, error) {
-	if cmd == "cni" {
-		return cniservice.NewKniService()
-	}
-	return nil, errors.New("implementation not found")
 }

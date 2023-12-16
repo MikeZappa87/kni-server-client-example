@@ -41,6 +41,12 @@ tasks:
   run-client-query:
     cmds:
       - go run cmd/client/client.go -cmd "query"
+  run-client-querypod:
+    cmds:
+      - go run cmd/client/client.go -cmd "querypod"
   run-client-status:
     cmds:
       - go run cmd/client/client.go -cmd "status"
+  build-server:
+    cmds:
+      - go build -o ./bin cmd/server/server.go

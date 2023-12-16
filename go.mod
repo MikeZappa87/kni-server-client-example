@@ -11,6 +11,7 @@ require (
 require (
 	github.com/containernetworking/cni v1.1.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/stretchr/testify v1.8.1 // indirect
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect

@@ -92,7 +92,18 @@ func main() {
 		if err != nil {
 			fmt.Print(err)
 		}
-	} else if cmd == "query" {
+	} else if cmd == "querypod" {
+		res, err := client.QueryPodNetwork(context.TODO(), &beta.QueryPodNetworkRequest{})
+
+		if err != nil {
+			fmt.Print(err)
+		}
+
+		for k, v := range res.Ipconfigs {
+			fmt.Printf("int: %s ip: %s", k, v.Ip)
+		}
+	}
+	/* else if cmd == "query" {
 		res, err := client.QueryNetworks(context.TODO(), &beta.QueryNetworksRequest{})
 
 		if err != nil {
@@ -113,4 +124,5 @@ func main() {
 			fmt.Printf("key: %s value: %s\n", k, v)
 		}
 	}
+	*/
 }
