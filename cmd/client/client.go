@@ -93,7 +93,11 @@ func main() {
 			fmt.Print(err)
 		}
 	} else if cmd == "querypod" {
-		res, err := client.QueryPodNetwork(context.TODO(), &beta.QueryPodNetworkRequest{})
+		res, err := client.QueryPodNetwork(context.TODO(), &beta.QueryPodNetworkRequest{
+			Id:        "123456",
+		})
+
+		fmt.Println("execute query pod")
 
 		if err != nil {
 			fmt.Print(err)

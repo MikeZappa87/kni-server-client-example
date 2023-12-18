@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/containerd/go-cni v1.1.9
+	go.etcd.io/bbolt v1.3.8
 	google.golang.org/grpc v1.58.3
 	google.golang.org/protobuf v1.31.0
 )
@@ -11,7 +12,7 @@ require (
 require (
 	github.com/containernetworking/cni v1.1.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
+	github.com/stretchr/objx v0.5.0 // indirect
 	golang.org/x/net v0.14.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect

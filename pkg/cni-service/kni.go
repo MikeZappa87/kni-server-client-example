@@ -2,20 +2,26 @@ package cniservice
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
 
 	"github.com/containerd/go-cni"
+	bolt "go.etcd.io/bbolt"
 )
 
 type KniService struct {
 	c cni.CNI
+	store *bolt.DB
 }
+
+const PodBucket = "pod"
 
 func NewKniService() (beta.KNIServer, error) {
 	opts := []cni.Opt{
-		cni.WithInterfacePrefix("kni"),
+		cni.WithInterfacePrefix("eth"),
 		 cni.WithDefaultConf,
 		 cni.WithLoNetwork} 
 	
@@ -24,10 +30,22 @@ func NewKniService() (beta.KNIServer, error) {
 	if err != nil {
 		return nil, err
 	}
+	
+	db, err := bolt.Open("net.db", 0600, nil)
+	if err != nil {
+  		return nil, err
+	}
 
 	kni := &KniService{
 		c: cni,
+		store: db,
 	}
+
+	db.Update(func(tx *bolt.Tx) error {
+		tx.CreateBucketIfNotExists([]byte(PodBucket))
+
+		return nil
+	})
 
 	err = kni.c.Load(opts...)
 
@@ -77,6 +95,25 @@ func (k *KniService) AttachNetwork(ctx context.Context, req *beta.AttachNetworkR
 			fmt.Printf("interface: %s ip: %s\n", outk, v.IP.String())
 		}
 	}
+
+	err = k.store.Update(func(tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(PodBucket))
+		if b == nil {
+			return fmt.Errorf("bucket does not exist")
+		}
+
+		if err != nil {
+			return err
+		}
+
+		js, err := json.Marshal(ip)
+
+		if err != nil {
+			return err
+		}
+
+		return b.Put([]byte(req.Id), js)
+	})
 	
 	if err != nil {
 		fmt.Println(fmt.Errorf("issue attaching with json marshalling: %s",err.Error()))
@@ -111,6 +148,20 @@ func (k *KniService) DetachNetwork(ctx context.Context, req *beta.DetachNetworkR
 		return nil, err
 	}
 
+	err = k.store.Update(func (tx *bolt.Tx) error {
+		b, err := tx.CreateBucketIfNotExists([]byte(PodBucket))
+
+		if err != nil {
+			return err
+		}
+		
+		return b.Delete([]byte(req.Id))
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
 	fmt.Println("DETACH RECEIVED")
 
 	return &beta.DetachNetworkResponse{}, nil
@@ -124,7 +175,33 @@ func (k *KniService) SetupNodeNetwork(context.Context, *beta.SetupNodeNetworkReq
 
 func (k *KniService) QueryPodNetwork(ctx context.Context,req *beta.QueryPodNetworkRequest) (*beta.QueryPodNetworkResponse, error) {
 	
-	var data map[string]*beta.IPConfig
+	data := make(map[string]*beta.IPConfig)
+	
+	err := k.store.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(PodBucket))
+		
+		if b == nil {
+			return errors.New("bucket not created")
+		}
+
+		v := b.Get([]byte(req.Id))
+
+		if v == nil {
+			return nil
+		}
+		
+		err := json.Unmarshal(v, &data)
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &beta.QueryPodNetworkResponse{
 		Ipconfigs: data,
