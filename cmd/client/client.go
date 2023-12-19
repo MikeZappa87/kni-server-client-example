@@ -7,7 +7,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
+	"github.com/MikeZappa87/kni-api/pkg/apis/runtime/beta"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

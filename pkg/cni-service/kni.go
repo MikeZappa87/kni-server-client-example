@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
+	"github.com/MikeZappa87/kni-api/pkg/apis/runtime/beta"
 
 	"github.com/containerd/go-cni"
 	bolt "go.etcd.io/bbolt"

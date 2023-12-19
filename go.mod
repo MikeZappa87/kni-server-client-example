@@ -1,6 +1,6 @@
 module github.com/MikeZappa87/kni-server-client-example
 
-go 1.19
+go 1.21.5
 
 require (
 	github.com/containerd/go-cni v1.1.9
@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/MikeZappa87/kni-api v0.0.0-20231218213147-aff858c7d09b // indirect
 	github.com/containernetworking/cni v1.1.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect

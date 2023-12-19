@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/MikeZappa87/kni-server-client-example/pkg/apis/runtime/beta"
+	"github.com/MikeZappa87/kni-api/pkg/apis/runtime/beta"
 	cniservice "github.com/MikeZappa87/kni-server-client-example/pkg/cni-service"
 
 	"google.golang.org/grpc"
